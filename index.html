@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spendora - Premium Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="spendora-logo">
+                    <span class="logo-inner"></span>
+                </div>
+                <h1>Spendora</h1>
+            </div>
+            <p class="tagline">Where smart budgeting meets elegant design.</p>
+        </header>
+
+        <main>
+            <section class="dashboard-grid">
+                <div class="dash-card balance">
+                    <span class="card-title">Net Balance</span>
+                    <span class="card-value" id="totalBalance">$0.00</span>
+                </div>
+                <div class="dash-card income">
+                    <span class="card-title">Total Income</span>
+                    <span class="card-value" id="totalIncome">$0.00</span>
+                </div>
+                <div class="dash-card expenses">
+                    <span class="card-title">Total Expenses</span>
+                    <span class="card-value" id="totalExpenses">$0.00</span>
+                </div>
+            </section>
+
+            <div class="main-workspace">
+                <section class="form-card">
+                    <h3>Log Transaction</h3>
+                    <form id="transactionForm">
+                        <div class="input-group">
+                            <label for="description">Description</label>
+                            <input type="text" id="description" placeholder="e.g., Freelance, Coffee, Gym" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="amount">Amount ($)</label>
+                                <input type="number" id="amount" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="type">Type</label>
+                                <select id="type">
+                                    <option value="income">Income (+)</option>
+                                    <option value="expense">Expense (-)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Add to Ledger</button>
+                    </form>
+                </section>
+
+                <section class="history-card">
+                    <h3>Transaction History</h3>
+                    <div class="table-wrapper">
+                        <table class="transaction-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionList">
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
