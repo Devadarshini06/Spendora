@@ -71,16 +71,6 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-.badge-pro {
-    font-size: 0.7rem;
-    vertical-align: super;
-    background: var(--clr-gold);
-    -webkit-text-fill-color: var(--bg-app);
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-weight: 900;
-}
-
 /* Pure Geometric Wallet CSS Logo Component */
 .spendora-logo {
     width: 32px;
@@ -145,8 +135,8 @@ body {
 .profile-info p { font-size: 0.75rem; color: var(--text-secondary); }
 .plan-tag {
     font-size: 0.65rem;
-    background-color: rgba(251, 191, 36, 0.15);
-    color: var(--clr-gold);
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
     padding: 0.1rem 0.3rem;
     border-radius: 4px;
     font-weight: 700;
@@ -167,14 +157,14 @@ body {
 }
 
 .streak-card {
-    background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(251,191,36,0.05));
-    border: 1px solid rgba(239,68,68,0.2);
+    background: linear-gradient(135deg, rgba(239,68,68,0.05), rgba(251,191,36,0.02));
+    border: 1px solid var(--border-color);
     padding: 1rem;
     border-radius: 12px;
     margin-top: auto;
     text-align: center;
 }
-.streak-fire { font-weight: 700; color: #f97316; display: block; margin-bottom: 0.25rem; }
+.streak-fire { font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 0.25rem; }
 .streak-card p { font-size: 0.75rem; color: var(--text-secondary); }
 
 /* Main Dynamic Dashboard Grid Array Layout Engine */
@@ -198,7 +188,6 @@ body {
 }
 
 .span-full { grid-column: span 12 !important; }
-.span-8 { grid-column: span 8 !important; }
 
 @media (max-width: 1100px) {
     .grid-item { grid-column: span 6 !important; }
@@ -263,20 +252,23 @@ body {
 /* Radial Style Progress Metrics Health Indicator Circle Styles */
 .score-circle-container { display: flex; justify-content: center; margin-bottom: 0.75rem; }
 .score-circle {
-    width: 100px; height: 100px; border-radius: 50%; border: 6px solid var(--clr-gold);
+    width: 100px; height: 100px; border-radius: 50%; border: 6px solid var(--border-color);
     display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800;
 }
+.score-circle.active { border-color: var(--clr-gold); }
 .score-circle span { font-size: 2rem; line-height: 1; }
 .score-circle small { font-size: 0.75rem; color: var(--text-secondary); }
-.stars-row { text-align: center; color: var(--clr-gold); letter-spacing: 2px; margin-bottom: 0.5rem; }
+.stars-row { text-align: center; color: var(--text-secondary); letter-spacing: 2px; margin-bottom: 0.5rem; }
+.stars-row.active { color: var(--clr-gold); }
 .score-desc { font-size: 0.8rem; text-align: center; color: var(--text-secondary); }
 
 /* AI insights listings */
 .insights-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
 .insights-list li {
-    padding: 0.65rem 0.85rem; background-color: var(--bg-element); border-left: 3px solid var(--clr-gold);
-    border-radius: 0 6px 6px 0; font-size: 0.85rem;
+    padding: 0.65rem 0.85rem; background-color: var(--bg-element); border-left: 3px solid var(--border-color);
+    border-radius: 0 6px 6px 0; font-size: 0.85rem; color: var(--text-secondary);
 }
+.insights-list li.alert-active { border-left-color: var(--clr-gold); color: var(--text-main); }
 
 /* Dynamic Pure Native Analytical Graph Output Grid Layout Panels */
 .card-header-actions { display: flex; justify-content: space-between; align-items: center; }
@@ -287,7 +279,9 @@ select, input[type="text"] {
 
 .bar-chart-viewport {
     height: 160px; display: flex; align-items: flex-end; gap: 1.5rem; padding-top: 1rem; border-bottom: 2px solid var(--border-color);
+    justify-content: center; position: relative;
 }
+.no-data-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-secondary); font-size: 0.85rem; }
 .chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; gap: 0.25rem; }
 .bar-track-wrapper { display: flex; align-items: flex-end; gap: 4px; height: 85%; width: 100%; max-width: 50px; }
 .bar-fill { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.5s ease; position: relative; }
@@ -304,8 +298,10 @@ select, input[type="text"] {
 .flowchart { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; text-align: center; }
 .flow-node { width: 100%; padding: 0.5rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; }
 .flow-node span { display: block; font-size: 1.1rem; }
-.node-in { background-color: rgba(16,185,129,0.12); color: var(--clr-inc); }
-.node-out { background-color: rgba(239,68,68,0.12); color: var(--clr-exp); }
+.node-in { background-color: rgba(16,185,129,0.05); color: var(--text-secondary); }
+.node-out { background-color: rgba(239,68,68,0.05); color: var(--text-secondary); }
+.node-in.active { background-color: rgba(16,185,129,0.12); color: var(--clr-inc); }
+.node-out.active { background-color: rgba(239,68,68,0.12); color: var(--clr-exp); }
 .node-net { background-color: var(--bg-element); border: 1px solid var(--border-color); }
 .flow-arrow { color: var(--text-secondary); font-weight: 900; }
 
@@ -324,14 +320,15 @@ select, input[type="text"] {
     background-color: var(--bg-element); border-radius: 8px; font-size: 0.85rem;
 }
 .bill-left-info h6 { font-size: 0.85rem; font-weight: 700; }
-.bill-left-info span { font-size: 0.7rem; color: var(--clr-exp); font-weight: 600; }
+.bill-left-info span { font-size: 0.7rem; color: var(--text-secondary); font-weight: 600; }
+.bill-left-info span.urgent { color: var(--clr-exp); }
 .bill-right-cost { font-weight: 700; color: var(--text-main); }
 
 /* Achievement Badges styles */
 .achievements-list { display: flex; flex-direction: column; gap: 0.5rem; }
 .ach-badge { padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; display: flex; gap: 0.5rem; align-items: center; }
 .ach-badge.unlocked { background-color: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); }
-.ach-badge.locked { background-color: var(--bg-element); opacity: 0.5; border: 1px dashed var(--border-color); }
+.ach-badge.locked { background-color: var(--bg-element); opacity: 0.4; border: 1px dashed var(--border-color); }
 
 /* Transaction Ledger Styling Framework */
 .ledger-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }

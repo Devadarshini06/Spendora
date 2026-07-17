@@ -1,9 +1,9 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spendora Pro - AI Financial Engine</title>
-    <!-- <title>Spendora - Premium Expense Tracker</title> -->
+    <title>Spendora - Premium Expense Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-mode">
@@ -12,7 +12,7 @@
     <nav class="navbar">
         <div class="nav-left">
             <div class="spendora-logo"><span class="logo-inner"></span></div>
-            <span class="brand-name">Spendora <span class="badge-pro">PRO</span></span>
+            <span class="brand-name">Spendora</span>
         </div>
         <div class="nav-right">
             <div class="loc-controls">
@@ -24,7 +24,7 @@
             </div>
             <button id="themeToggle" class="btn-icon" onclick="toggleTheme()">🌓</button>
             <div class="notification-bell" onclick="toggleNotificationPanel()">
-                🔔<span class="notif-count" id="notifBadge">3</span>
+                🔔<span class="notif-count" id="notifBadge">0</span>
             </div>
         </div>
     </nav>
@@ -39,19 +39,19 @@
                 <div class="profile-info">
                     <h4 id="profName">John Doe</h4>
                     <p id="profEmail">john.doe@spendora.ai</p>
-                    <span class="plan-tag">Elite Tier</span>
+                    <span class="plan-tag">Standard Account</span>
                 </div>
             </div>
             <hr class="divider">
             <ul class="side-menu">
                 <li class="active">📊 Overview</li>
-                <li onclick="alert('OCR Receipt Scanner running simulation... Scan Successful!')">📷 Receipt OCR</li>
+                <li onclick="alert('OCR Receipt Scanner running simulation... Please add data first!')">📷 Receipt OCR</li>
                 <li onclick="openChatbot()">🤖 AI Advisor</li>
-                <li onclick="alert('Recurring System Active: Monthly Rent & Salary automated.')">🔁 Recurring Rules</li>
+                <li onclick="alert('Recurring System Active: Ready for automated pipelines.')">🔁 Recurring Rules</li>
             </ul>
             <div class="streak-card">
-                <span class="streak-fire">🔥 14 Day Streak</span>
-                <p>Logging consistency bonus active!</p>
+                <span class="streak-fire">🔥 0 Day Streak</span>
+                <p>Log your first transaction to start a streak!</p>
             </div>
         </aside>
 
@@ -107,12 +107,12 @@
                 <h3>Financial Health Score</h3>
                 <div class="score-circle-container">
                     <div class="score-circle">
-                        <span id="healthScoreValue">86</span>
+                        <span id="healthScoreValue">0</span>
                         <small>/ 100</small>
                     </div>
                 </div>
-                <div class="stars-row" id="healthStars">★★★★★</div>
-                <p class="score-desc">Excellent stability. High savings allocation, low debt structures.</p>
+                <div class="stars-row" id="healthStars">☆☆☆☆☆</div>
+                <p class="score-desc" id="healthDesc">No data recorded yet. Add transactions to compute your health index.</p>
             </div>
 
             <!-- AI Engine Insights Engine Box -->
@@ -142,11 +142,11 @@
             <div class="grid-item cashflow-card">
                 <h3>Cash Flow Flowchart</h3>
                 <div class="flowchart">
-                    <div class="flow-node node-in">Money Coming In <span id="flowIn">₹0</span></div>
+                    <div class="flow-node node-in">Money Coming In <span id="flowIn">₹0.00</span></div>
                     <div class="flow-arrow">↓</div>
-                    <div class="flow-node node-out">Money Going Out <span id="flowOut">₹0</span></div>
+                    <div class="flow-node node-out">Money Going Out <span id="flowOut">₹0.00</span></div>
                     <div class="flow-arrow">↓</div>
-                    <div class="flow-node node-net" id="flowNet">Net Cash Flow <span id="flowNetVal">₹0</span></div>
+                    <div class="flow-node node-net" id="flowNet">Net Cash Flow <span id="flowNetVal">₹0.00</span></div>
                 </div>
             </div>
 
@@ -177,10 +177,8 @@
             <!-- Gamification Milestones Achievements -->
             <div class="grid-item achievements-card">
                 <h3>System Achievements</h3>
-                <div class="achievements-list">
-                    <div class="ach-badge unlocked">🏅 <span class="ach-txt">Saved ₹10,000 this month</span></div>
-                    <div class="ach-badge unlocked">🏅 <span class="ach-txt">Stayed within budget lines</span></div>
-                    <div class="ach-badge locked">🔒 <span class="ach-txt">Reach first investment target</span></div>
+                <div class="achievements-list" id="achievementsContainer">
+                    <!-- Dynamic validation states populated by js -->
                 </div>
             </div>
 
@@ -224,7 +222,7 @@
             <h4 id="modalTitle">Log Entry</h4>
             <div class="input-group">
                 <label>Description</label>
-                <input type="text" id="txtDesc" placeholder="e.g. Starbucks, Client Payroll">
+                <input type="text" id="txtDesc" placeholder="e.g. Grocery Shop, Freelance Pay">
             </div>
             <div class="input-group">
                 <label>Amount</label>
@@ -260,7 +258,7 @@
     <div class="chatbot-drawer" id="chatbotDrawer">
         <div class="chat-header"><span>🤖 Spendora Financial Advisor</span><button onclick="closeChatbot()">×</button></div>
         <div class="chat-messages" id="chatBox">
-            <p class="msg-ai">Hello John! Ask me anything about your current budgets, trends, or predictions.</p>
+            <p class="msg-ai">Hello John! Add your records to query balance summaries or expense forecasts.</p>
         </div>
         <div class="chat-input-row">
             <input type="text" id="chatInput" placeholder="Type a message...">
