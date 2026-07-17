@@ -1,86 +1,271 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spendora - Premium Expense Tracker</title>
+    <title>Spendora Pro - AI Financial Engine</title>
+    <!-- <title>Spendora - Premium Expense Tracker</title> -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="dark-mode">
 
-    <div class="app-container">
-        <header class="app-header">
-            <div class="logo-container">
-                <div class="spendora-logo">
-                    <span class="logo-inner"></span>
-                </div>
-                <h1>Spendora</h1>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="spendora-logo"><span class="logo-inner"></span></div>
+            <span class="brand-name">Spendora <span class="badge-pro">PRO</span></span>
+        </div>
+        <div class="nav-right">
+            <div class="loc-controls">
+                <select id="currencySelector" onchange="changeCurrency()">
+                    <option value="INR">INR (₹)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                </select>
             </div>
-            <p class="tagline">Where smart budgeting meets elegant design.</p>
-        </header>
+            <button id="themeToggle" class="btn-icon" onclick="toggleTheme()">🌓</button>
+            <div class="notification-bell" onclick="toggleNotificationPanel()">
+                🔔<span class="notif-count" id="notifBadge">3</span>
+            </div>
+        </div>
+    </nav>
 
-        <main>
-            <section class="dashboard-grid">
-                <div class="dash-card balance">
-                    <span class="card-title">Net Balance</span>
-                    <span class="card-value" id="totalBalance">₹0.00</span>
+    <!-- App Shell Layout -->
+    <div class="app-shell">
+        
+        <!-- Sidebar Interface -->
+        <aside class="sidebar">
+            <div class="profile-snapshot">
+                <div class="profile-avatar">JD</div>
+                <div class="profile-info">
+                    <h4 id="profName">John Doe</h4>
+                    <p id="profEmail">john.doe@spendora.ai</p>
+                    <span class="plan-tag">Elite Tier</span>
                 </div>
-                <div class="dash-card income">
-                    <span class="card-title">Total Income</span>
-                    <span class="card-value" id="totalIncome">₹0.00</span>
+            </div>
+            <hr class="divider">
+            <ul class="side-menu">
+                <li class="active">📊 Overview</li>
+                <li onclick="alert('OCR Receipt Scanner running simulation... Scan Successful!')">📷 Receipt OCR</li>
+                <li onclick="openChatbot()">🤖 AI Advisor</li>
+                <li onclick="alert('Recurring System Active: Monthly Rent & Salary automated.')">🔁 Recurring Rules</li>
+            </ul>
+            <div class="streak-card">
+                <span class="streak-fire">🔥 14 Day Streak</span>
+                <p>Logging consistency bonus active!</p>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Dashboard Grid Area -->
+        <main class="dashboard-grid">
+            
+            <!-- Welcome Header Module -->
+            <div class="grid-item welcome-header span-full">
+                <h2>Welcome Back, John 👋</h2>
+                <p class="tagline">Here's your comprehensive real-time financial health overview.</p>
+            </div>
+
+            <!-- Financial Summary Cards Panel -->
+            <div class="grid-item span-full summary-cards-container">
+                <div class="sum-card text-balance">
+                    <h5>Total Balance</h5>
+                    <h3 id="lblTotalBalance">₹0.00</h3>
                 </div>
-                <div class="dash-card expenses">
-                    <span class="card-title">Total Expenses</span>
-                    <span class="card-value" id="totalExpenses">₹0.00</span>
+                <div class="sum-card text-income">
+                    <h5>Monthly Income</h5>
+                    <h3 id="lblIncome">₹0.00</h3>
                 </div>
-            </section>
+                <div class="sum-card text-expense">
+                    <h5>Monthly Expenses</h5>
+                    <h3 id="lblExpenses">₹0.00</h3>
+                </div>
+                <div class="sum-card text-savings">
+                    <h5>Total Savings</h5>
+                    <h3 id="lblSavings">₹0.00</h3>
+                </div>
+                <div class="sum-card text-networth">
+                    <h5>Net Worth</h5>
+                    <h3 id="lblNetWorth">₹0.00</h3>
+                </div>
+            </div>
 
-            <div class="main-workspace">
-                <section class="form-card">
-                    <h3>Log Transaction</h3>
-                    <form id="transactionForm">
-                        <div class="input-group">
-                            <label for="description">Description</label>
-                            <input type="text" id="description" placeholder="e.g., Freelance, Coffee, Gym" required>
-                        </div>
+            <!-- Quick Actions Panel -->
+            <div class="grid-item actions-panel">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons-grid">
+                    <button class="btn-act inc" onclick="triggerAction('income')">➕ Add Income</button>
+                    <button class="btn-act exp" onclick="triggerAction('expense')">➖ Add Expense</button>
+                    <button class="btn-act goal" onclick="triggerAction('goal')">🎯 Create Goal</button>
+                </div>
+                <div class="report-export-row">
+                    <button class="btn-sec" onclick="exportReport('PDF')">📄 Export PDF</button>
+                    <button class="btn-sec" onclick="exportReport('Excel')">📊 Export Excel</button>
+                </div>
+            </div>
 
-                        <div class="form-row">
-                            <div class="input-group">
-                                <label for="amount">Amount (₹)</label>
-                                <input type="number" id="amount" step="0.01" placeholder="0.00" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="type">Type</label>
-                                <select id="type">
-                                    <option value="income">Income (+)</option>
-                                    <option value="expense">Expense (-)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn-submit">Add to Ledger</button>
-                    </form>
-                </section>
-
-                <section class="history-card">
-                    <h3>Transaction History</h3>
-                    <div class="table-wrapper">
-                        <table class="transaction-table">
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Type</th>
-                                    <th>Amount</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactionList">
-                                </tbody>
-                        </table>
+            <!-- Financial Health Score Widget -->
+            <div class="grid-item health-score-widget">
+                <h3>Financial Health Score</h3>
+                <div class="score-circle-container">
+                    <div class="score-circle">
+                        <span id="healthScoreValue">86</span>
+                        <small>/ 100</small>
                     </div>
-                </section>
+                </div>
+                <div class="stars-row" id="healthStars">★★★★★</div>
+                <p class="score-desc">Excellent stability. High savings allocation, low debt structures.</p>
             </div>
+
+            <!-- AI Engine Insights Engine Box -->
+            <div class="grid-item ai-insights-panel">
+                <h3>🤖 Spendora AI Insights</h3>
+                <ul class="insights-list" id="aiInsightsContainer">
+                    <!-- Loaded dynamically via script engine -->
+                </ul>
+            </div>
+
+            <!-- Income vs Expense Bar Chart -->
+            <div class="grid-item chart-card">
+                <div class="card-header-actions">
+                    <h3>Income vs Expense</h3>
+                    <select id="chartFilter" onchange="refreshVisualAnalytics()">
+                        <option value="thisMonth">This Month</option>
+                        <option value="last6Months">Last 6 Months</option>
+                        <option value="thisYear">This Year</option>
+                    </select>
+                </div>
+                <div class="bar-chart-viewport" id="incomeExpenseChart">
+                    <!-- Rendered custom columns by JS mapping -->
+                </div>
+            </div>
+
+            <!-- Cash Flow Analysis Module -->
+            <div class="grid-item cashflow-card">
+                <h3>Cash Flow Flowchart</h3>
+                <div class="flowchart">
+                    <div class="flow-node node-in">Money Coming In <span id="flowIn">₹0</span></div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-node node-out">Money Going Out <span id="flowOut">₹0</span></div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-node node-net" id="flowNet">Net Cash Flow <span id="flowNetVal">₹0</span></div>
+                </div>
+            </div>
+
+            <!-- Expense Breakdown & Budget Target Panel -->
+            <div class="grid-item category-budgets-card">
+                <h3>Category Limits & Budgets</h3>
+                <div id="categoryBudgetsContainer" class="progress-list-wrapper">
+                    <!-- Progress tracks inject dynamic loops -->
+                </div>
+            </div>
+
+            <!-- Savings Target Goals Widget -->
+            <div class="grid-item savings-goals-card">
+                <h3>Active Savings Goals</h3>
+                <div id="savingsGoalsContainer" class="progress-list-wrapper">
+                    <!-- Active saving targets rendering space -->
+                </div>
+            </div>
+
+            <!-- Upcoming Invoices & Billing Deadlines -->
+            <div class="grid-item upcoming-bills-card">
+                <h3>Upcoming Bills</h3>
+                <div class="bills-stack" id="billsContainer">
+                    <!-- Bills iteration nodes -->
+                </div>
+            </div>
+
+            <!-- Gamification Milestones Achievements -->
+            <div class="grid-item achievements-card">
+                <h3>System Achievements</h3>
+                <div class="achievements-list">
+                    <div class="ach-badge unlocked">🏅 <span class="ach-txt">Saved ₹10,000 this month</span></div>
+                    <div class="ach-badge unlocked">🏅 <span class="ach-txt">Stayed within budget lines</span></div>
+                    <div class="ach-badge locked">🔒 <span class="ach-txt">Reach first investment target</span></div>
+                </div>
+            </div>
+
+            <!-- Dynamic Master Transaction Table Ledger Component -->
+            <div class="grid-item ledger-card span-full">
+                <div class="ledger-header-row">
+                    <h3>Recent Transactions</h3>
+                    <div class="ledger-controls">
+                        <input type="text" id="ledgerSearch" placeholder="Search by name..." oninput="renderTransactionsTable()">
+                        <select id="ledgerFilter" onchange="renderTransactionsTable()">
+                            <option value="all">All Items</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expenses</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-scroll-container">
+                    <table class="master-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="masterTransactionBody">
+                            <!-- Dynamic transactional components injection inside row lines -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </main>
+    </div>
+
+    <!-- Modals Workspace & Dynamic Overlays -->
+    <div class="modal-overlay" id="transactionModal">
+        <div class="modal-body">
+            <h4 id="modalTitle">Log Entry</h4>
+            <div class="input-group">
+                <label>Description</label>
+                <input type="text" id="txtDesc" placeholder="e.g. Starbucks, Client Payroll">
+            </div>
+            <div class="input-group">
+                <label>Amount</label>
+                <input type="number" id="numAmount" placeholder="0.00">
+            </div>
+            <div class="input-group" id="categoryGroup">
+                <label>Category</label>
+                <select id="selCategory">
+                    <option value="Food">Food</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Rent">Rent</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <div class="modal-footer-btns">
+                <button class="btn-sec" onclick="closeModal()">Cancel</button>
+                <button class="btn-submit-action" onclick="saveModalEntry()">Save Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Side Stack Dropdowns drawer -->
+    <div class="notif-drawer" id="notificationDrawer">
+        <h4>Notifications Center</h4>
+        <div class="notif-items-stack" id="notifStack">
+            <!-- Alert items stream -->
+        </div>
+    </div>
+
+    <!-- AI Chatbot interface Panel -->
+    <div class="chatbot-drawer" id="chatbotDrawer">
+        <div class="chat-header"><span>🤖 Spendora Financial Advisor</span><button onclick="closeChatbot()">×</button></div>
+        <div class="chat-messages" id="chatBox">
+            <p class="msg-ai">Hello John! Ask me anything about your current budgets, trends, or predictions.</p>
+        </div>
+        <div class="chat-input-row">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button onclick="sendChatMessage()">Send</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
