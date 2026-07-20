@@ -1,8 +1,12 @@
 /**
- * Spendora Core State Architecture with Authentication & Reporting Modules
+ * Spendora Core State Architecture with Dynamic User Profile Syncing
  */
 let state = {
     isAuthenticated: localStorage.getItem('spendora_auth') === 'true',
+    user: JSON.parse(localStorage.getItem('spendora_user')) || {
+        name: "Alex Morgan",
+        email: "alex.morgan@spendora.ai"
+    },
     currency: "INR",
     fxRate: 1.0, 
     activeModalType: null,
@@ -44,6 +48,9 @@ function initializeEngine() {
     authScreen.style.display = 'none';
     appShell.classList.remove('locked-shell');
 
+    // Update dynamic profile UI elements
+    updateUserProfileDisplay();
+
     renderDashboardMetrics();
     refreshVisualAnalytics();
     renderBudgetProgressBars();
@@ -56,18 +63,51 @@ function initializeEngine() {
 }
 
 function handleLogin() {
-    let email = document.getElementById('loginEmail').value;
-    if(!email) return alert("Please supply login credentials.");
-    
+    let name = document.getElementById('loginName').value.trim();
+    let email = document.getElementById('loginEmail').value.trim();
+
+    if(!name || !email) return alert("Please supply complete login credentials.");
+
     state.isAuthenticated = true;
+    state.user = { name: name, email: email };
+
     localStorage.setItem('spendora_auth', 'true');
+    localStorage.setItem('spendora_user', JSON.stringify(state.user));
+
     initializeEngine();
 }
 
 function handleLogout() {
     state.isAuthenticated = false;
     localStorage.removeItem('spendora_auth');
+    localStorage.removeItem('spendora_user');
     initializeEngine();
+}
+
+/**
+ * Dynamic User Profile Renderer
+ */
+function updateUserProfileDisplay() {
+    const name = state.user.name || "User";
+    const email = state.user.email || "user@spendora.ai";
+
+    // Compute initials dynamically (e.g. "Alex Morgan" -> "AM")
+    const nameParts = name.trim().split(' ');
+    let initials = "";
+    if (nameParts.length > 1) {
+        initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+    } else if (nameParts.length === 1 && nameParts[0].length > 0) {
+        initials = nameParts[0].substring(0, 2).toUpperCase();
+    } else {
+        initials = "US";
+    }
+
+    // Update Sidebar & Dashboard Header
+    document.getElementById('profName').innerText = name;
+    document.getElementById('profEmail').innerText = email;
+    document.getElementById('profAvatar').innerText = initials;
+    document.getElementById('welcomeHeading').innerText = `Welcome Back, ${nameParts[0]} 👋`;
+    document.getElementById('chatAiWelcome').innerText = `Hello ${nameParts[0]}! Add your records to query balance summaries or expense forecasts.`;
 }
 
 /**
@@ -349,6 +389,7 @@ function openMonthlyReportModal() {
 
     const summaryView = document.getElementById('reportSummaryView');
     summaryView.innerHTML = `
+        <p><strong>Account Holder:</strong> ${state.user.name}</p>
         <p><strong>Period:</strong> Current Active Month Ledger</p>
         <p><strong>Total Transactions Count:</strong> ${state.transactions.length}</p>
         <p><strong>Gross Income:</strong> ${formatCurrencyVal(incomeTotal)}</p>
@@ -364,7 +405,7 @@ function closeMonthlyReportModal() {
 }
 
 function downloadReportFile(formatType) {
-    alert(`Successfully generated cryptographic statement payload!\nFormat: ${formatType}\nCheck your device downloads folder.`);
+    alert(`Successfully generated statement payload for ${state.user.name}!\nFormat: ${formatType}\nCheck your device downloads folder.`);
     closeMonthlyReportModal();
 }
 
@@ -445,8 +486,8 @@ function sendChatMessage() {
         let aiMsg = document.createElement('p');
         aiMsg.className = 'msg-ai';
         aiMsg.innerText = state.transactions.length === 0 ? 
-            "No transaction records found to query. Use Quick Actions to log data." : 
-            "Active budget matrices and ledger arrays are tracking successfully within target limits.";
+            `No transaction records found to query, ${state.user.name.split(' ')[0]}. Use Quick Actions to log data.` : 
+            `Active budget matrices and ledger arrays are tracking successfully within target limits.`;
         box.appendChild(aiMsg);
         box.scrollTop = box.scrollHeight;
     }, 600);
