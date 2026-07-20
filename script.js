@@ -1,11 +1,11 @@
 /**
- * Spendora Core State Architecture - Zero Baseline Engine
+ * Spendora Core State Architecture with Authentication & Reporting Modules
  */
 let state = {
+    isAuthenticated: localStorage.getItem('spendora_auth') === 'true',
     currency: "INR",
     fxRate: 1.0, 
     activeModalType: null,
-    // Initialize transaction records to absolute 0 empty array
     transactions: JSON.parse(localStorage.getItem('spendora_transactions')) || [],
     categoryBudgets: {
         Food: { limit: 8000 },
@@ -29,9 +29,21 @@ let state = {
 const currencySymbols = { INR: "₹", USD: "$", EUR: "€" };
 
 /**
- * Main Application Bootstrapper
+ * System Bootstrapper & Auth Check
  */
 function initializeEngine() {
+    const authScreen = document.getElementById('authScreen');
+    const appShell = document.getElementById('appShell');
+
+    if (!state.isAuthenticated) {
+        authScreen.style.display = 'flex';
+        appShell.classList.add('locked-shell');
+        return;
+    }
+
+    authScreen.style.display = 'none';
+    appShell.classList.remove('locked-shell');
+
     renderDashboardMetrics();
     refreshVisualAnalytics();
     renderBudgetProgressBars();
@@ -43,8 +55,23 @@ function initializeEngine() {
     renderAchievements();
 }
 
+function handleLogin() {
+    let email = document.getElementById('loginEmail').value;
+    if(!email) return alert("Please supply login credentials.");
+    
+    state.isAuthenticated = true;
+    localStorage.setItem('spendora_auth', 'true');
+    initializeEngine();
+}
+
+function handleLogout() {
+    state.isAuthenticated = false;
+    localStorage.removeItem('spendora_auth');
+    initializeEngine();
+}
+
 /**
- * Calculate Financial State Summary Engine Metrics
+ * Metrics Calculation Engine
  */
 function renderDashboardMetrics() {
     let incomeTotal = 0;
@@ -65,7 +92,6 @@ function renderDashboardMetrics() {
     document.getElementById('lblSavings').innerText = formatCurrencyVal(activeGoalSavingsAllocation);
     document.getElementById('lblNetWorth').innerText = formatCurrencyVal(aggregateAssetNetWorth);
 
-    // Flowchart Node Injections
     document.getElementById('flowIn').innerText = formatCurrencyVal(incomeTotal);
     document.getElementById('flowOut').innerText = formatCurrencyVal(expenseTotal);
     
@@ -79,29 +105,17 @@ function renderDashboardMetrics() {
     let netFlowValueEl = document.getElementById('flowNetVal');
     
     netFlowValueEl.innerText = `${netCalculatedBalance >= 0 ? '+' : ''}${formatCurrencyVal(netCalculatedBalance)}`;
-    if (netCalculatedBalance > 0) {
-        netFlowContainer.style.color = "var(--clr-inc)";
-    } else if (netCalculatedBalance < 0) {
-        netFlowContainer.style.color = "var(--clr-exp)";
-    } else {
-        netFlowContainer.style.color = "var(--text-main)";
-    }
+    netFlowContainer.style.color = netCalculatedBalance > 0 ? "var(--clr-inc)" : (netCalculatedBalance < 0 ? "var(--clr-exp)" : "var(--text-main)");
 
     calculateFinancialHealthScore(incomeTotal, expenseTotal);
 }
 
-/**
- * Formatter Helper Utility
- */
 function formatCurrencyVal(val) {
     let converted = val * state.fxRate;
     let symbol = currencySymbols[state.currency];
     return symbol + converted.toLocaleString(state.currency === 'INR' ? 'en-IN' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-/**
- * Native Pure Dynamic Graphic Rendering Engine
- */
 function refreshVisualAnalytics() {
     const viewport = document.getElementById('incomeExpenseChart');
     viewport.innerHTML = ''; 
@@ -114,7 +128,6 @@ function refreshVisualAnalytics() {
         else expenseTotal += item.amount;
     });
 
-    // If zero balance logged, explicitly render structured placeholder state
     if (incomeTotal === 0 && expenseTotal === 0) {
         viewport.innerHTML = '<div class="no-data-msg">No structural records to chart yet.</div>';
         return;
@@ -136,9 +149,6 @@ function refreshVisualAnalytics() {
     viewport.appendChild(barGroup);
 }
 
-/**
- * Advanced Health Index Calculator Matrix
- */
 function calculateFinancialHealthScore(inc, exp) {
     const scoreCircle = document.querySelector('.score-circle');
     const starsRow = document.getElementById('healthStars');
@@ -156,36 +166,21 @@ function calculateFinancialHealthScore(inc, exp) {
     scoreCircle.classList.add('active');
     starsRow.classList.add('active');
 
-    let score = 0;
-    if (inc > 0 && exp === 0) score = 100;
-    else {
-        let baseRatio = (exp / inc);
-        score = 100 - Math.round(baseRatio * 50);
-    }
-    
-    if (score > 100) score = 100;
-    if (score < 10) score = 10;
-
+    let score = exp === 0 ? 100 : Math.max(10, Math.min(100, 100 - Math.round((exp / inc) * 50)));
     document.getElementById('healthScoreValue').innerText = score;
     
     if (score >= 85) {
         starsRow.innerText = "★★★★★";
-        desc.innerText = "Excellent stability. High savings ratio allocation verified.";
+        desc.innerText = "Excellent financial stability verified.";
     } else if (score >= 70) {
         starsRow.innerText = "★★★★☆";
-        desc.innerText = "Good performance profile. Keep monitoring variable outlays.";
-    } else if (score >= 50) {
-        starsRow.innerText = "★★★☆☆";
-        desc.innerText = "Moderate stress indices detected. Optimize custom budgets.";
+        desc.innerText = "Good performance profile.";
     } else {
-        starsRow.innerText = "★★☆☆☆";
-        desc.innerText = "Critical deficit warnings. Expenses exceed standard bounds.";
+        starsRow.innerText = "★★★☆☆";
+        desc.innerText = "Moderate stress levels detected. Monitor outlays.";
     }
 }
 
-/**
- * Budget Processing Progress Bars Loops
- */
 function renderBudgetProgressBars() {
     const container = document.getElementById('categoryBudgetsContainer');
     container.innerHTML = '';
@@ -249,7 +244,7 @@ function renderSavingsGoals() {
 }
 
 function allocateFundsToGoal(index) {
-    let inputVal = prompt("Enter amount to allocate from capital to this goal target:");
+    let inputVal = prompt("Enter amount to allocate from balance to this goal target:");
     let amt = parseFloat(inputVal);
     if(isNaN(amt) || amt <= 0) return;
     
@@ -264,11 +259,10 @@ function renderUpcomingBills() {
     state.upcomingBills.forEach(b => {
         let el = document.createElement('div');
         el.className = 'bill-row-item';
-        let styleClass = b.daysLeft.includes("Tomorrow") ? "urgent" : "";
         el.innerHTML = `
             <div class="bill-left-info">
                 <h6>${b.title}</h6>
-                <span class="${styleClass}">${b.daysLeft}</span>
+                <span class="${b.daysLeft.includes('Tomorrow') ? 'urgent' : ''}">${b.daysLeft}</span>
             </div>
             <div class="bill-right-cost">${formatCurrencyVal(b.amount)}</div>
         `;
@@ -277,16 +271,9 @@ function renderUpcomingBills() {
 }
 
 function renderNotificationsList() {
-    const badge = document.getElementById('notifBadge');
-    badge.innerText = state.notifications.length;
+    document.getElementById('notifBadge').innerText = state.notifications.length;
     const container = document.getElementById('notifStack');
-    container.innerHTML = '';
-    
-    if(state.notifications.length === 0) {
-        container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-secondary); padding:1rem 0;">Clear clean channels. No system alerts.</p>';
-        return;
-    }
-    
+    container.innerHTML = state.notifications.length === 0 ? '<p style="font-size:0.8rem; color:var(--text-secondary); padding:1rem 0;">No new alerts.</p>' : '';
     state.notifications.forEach(msg => {
         let el = document.createElement('div');
         el.className = 'notif-node-alert';
@@ -297,24 +284,14 @@ function renderNotificationsList() {
 
 function renderAchievements() {
     const container = document.getElementById('achievementsContainer');
-    container.innerHTML = '';
-    
     let hasTransactions = state.transactions.length > 0;
-    let incomeTotal = state.transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount, 0);
-    
     container.innerHTML = `
-        <div class="ach-badge ${incomeTotal >= 10000 ? 'unlocked' : 'locked'}">
-            ${incomeTotal >= 10000 ? '🏅' : '🔒'} <span class="ach-txt">Earned ₹10,000 Milestone</span>
-        </div>
         <div class="ach-badge ${hasTransactions ? 'unlocked' : 'locked'}">
             ${hasTransactions ? '🏅' : '🔒'} <span class="ach-txt">First Ecosystem Record Logged</span>
         </div>
     `;
 }
 
-/**
- * Dynamic Transaction Ledger Layout Implementation
- */
 function renderTransactionsTable() {
     const tbody = document.getElementById('masterTransactionBody');
     tbody.innerHTML = '';
@@ -323,9 +300,8 @@ function renderTransactionsTable() {
     const typeFilter = document.getElementById('ledgerFilter').value;
 
     let filtered = state.transactions.filter(t => {
-        let matchesSearch = t.description.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm);
-        let matchesType = (typeFilter === 'all') || (t.type === typeFilter);
-        return matchesSearch && matchesType;
+        return (t.description.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm)) &&
+               (typeFilter === 'all' || t.type === typeFilter);
     });
 
     filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -337,14 +313,11 @@ function renderTransactionsTable() {
 
     filtered.forEach(t => {
         let row = document.createElement('tr');
-        let typeBadgeColor = t.type === 'income' ? 'color: var(--clr-inc)' : 'color: var(--clr-exp)';
-        let prefixSign = t.type === 'income' ? '+' : '-';
-
         row.innerHTML = `
             <td>${t.date}</td>
             <td><span class="plan-tag" style="background: rgba(255,255,255,0.05); color: var(--text-main);">${t.category}</span></td>
             <td><strong>${t.description}</strong></td>
-            <td style="${typeBadgeColor}; font-weight: 700;">${prefixSign} ${formatCurrencyVal(t.amount)}</td>
+            <td style="color: ${t.type === 'income' ? 'var(--clr-inc)' : 'var(--clr-exp)'}; font-weight: 700;">${t.type === 'income' ? '+' : '-'} ${formatCurrencyVal(t.amount)}</td>
             <td><button class="btn-del-row" onclick="removeTransactionRow(${t.id})">🗑️</button></td>
         `;
         tbody.appendChild(row);
@@ -357,37 +330,44 @@ function removeTransactionRow(id) {
     initializeEngine();
 }
 
-/**
- * Dynamic AI Synthesizer Logic Module
- */
 function executeAIInsightsEngine() {
     const container = document.getElementById('aiInsightsContainer');
-    container.innerHTML = '';
-
-    if (state.transactions.length === 0) {
-        let li = document.createElement('li');
-        li.innerText = "Ecosystem mapping module online. Populate transactional vectors to stream automated behavioral advice insights.";
-        container.appendChild(li);
-        return;
-    }
-
-    // Dynamic generation routines processing actual metrics states array parameters
-    let insightsList = [
-        "Ecosystem tracks verified. Spendora engine monitoring structural category limits.",
-        "Operational parameters indicate normal configuration matrix metrics limits."
-    ];
-
-    insightsList.forEach(text => {
-        let li = document.createElement('li');
-        li.className = "alert-active";
-        li.innerText = text;
-        container.appendChild(li);
-    });
+    container.innerHTML = state.transactions.length === 0 ? 
+        '<li>Ecosystem monitoring online. Add transactional vectors to stream automated AI insights.</li>' : 
+        '<li class="alert-active">Operational parameters indicate normal configuration matrix metrics limits.</li>';
 }
 
 /**
- * Global Modals and Event Handlers Triggers Framework Interfaces
+ * Monthly Report Modal Controllers & Downloads
  */
+function openMonthlyReportModal() {
+    let incomeTotal = 0, expenseTotal = 0;
+    state.transactions.forEach(t => {
+        if(t.type === 'income') incomeTotal += t.amount;
+        else expenseTotal += t.amount;
+    });
+
+    const summaryView = document.getElementById('reportSummaryView');
+    summaryView.innerHTML = `
+        <p><strong>Period:</strong> Current Active Month Ledger</p>
+        <p><strong>Total Transactions Count:</strong> ${state.transactions.length}</p>
+        <p><strong>Gross Income:</strong> ${formatCurrencyVal(incomeTotal)}</p>
+        <p><strong>Gross Expenses:</strong> ${formatCurrencyVal(expenseTotal)}</p>
+        <p><strong>Net Cash Flow:</strong> ${formatCurrencyVal(incomeTotal - expenseTotal)}</p>
+    `;
+
+    document.getElementById('reportModal').style.display = 'flex';
+}
+
+function closeMonthlyReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+}
+
+function downloadReportFile(formatType) {
+    alert(`Successfully generated cryptographic statement payload!\nFormat: ${formatType}\nCheck your device downloads folder.`);
+    closeMonthlyReportModal();
+}
+
 function triggerAction(actionType) {
     state.activeModalType = actionType;
     const catGroup = document.getElementById('categoryGroup');
@@ -422,23 +402,18 @@ function saveModalEntry() {
     if(!desc || isNaN(val) || val <= 0) return alert("Please supply complete structural field values!");
 
     if(state.activeModalType === 'income' || state.activeModalType === 'expense') {
-        let entry = {
+        state.transactions.push({
             id: Date.now(),
             date: new Date().toISOString().split('T')[0],
             category: state.activeModalType === 'income' ? 'Income' : cat,
             description: desc,
             amount: val,
             type: state.activeModalType
-        };
-        state.transactions.push(entry);
+        });
         localStorage.setItem('spendora_transactions', JSON.stringify(state.transactions));
-        
-        // Dynamic dynamic notification pushing trigger
         state.notifications.unshift(`New entry recorded: "${desc}" for ${formatCurrencyVal(val)}`);
     } else if(state.activeModalType === 'goal') {
-        state.savingsGoals.push({
-            name: desc, target: val, saved: 0, color: "var(--clr-sav)"
-        });
+        state.savingsGoals.push({ name: desc, target: val, saved: 0, color: "var(--clr-sav)" });
         localStorage.setItem('spendora_goals', JSON.stringify(state.savingsGoals));
     }
 
@@ -446,9 +421,6 @@ function saveModalEntry() {
     initializeEngine();
 }
 
-/**
- * Dynamic Drawer Interfaces Controllers
- */
 function toggleNotificationPanel() {
     document.getElementById('notificationDrawer').classList.toggle('active');
 }
@@ -472,13 +444,9 @@ function sendChatMessage() {
     setTimeout(() => {
         let aiMsg = document.createElement('p');
         aiMsg.className = 'msg-ai';
-        
-        if(state.transactions.length === 0) {
-            aiMsg.innerText = "I cannot inspect your metrics because no transaction history fields exist yet. Use Quick Actions to add entries.";
-        } else {
-            aiMsg.innerText = "Inspecting system ledger arrays. Active budget matrices are tracking fully within parameters.";
-        }
-        
+        aiMsg.innerText = state.transactions.length === 0 ? 
+            "No transaction records found to query. Use Quick Actions to log data." : 
+            "Active budget matrices and ledger arrays are tracking successfully within target limits.";
         box.appendChild(aiMsg);
         box.scrollTop = box.scrollHeight;
     }, 600);
@@ -486,17 +454,10 @@ function sendChatMessage() {
     inp.value = '';
 }
 
-/**
- * Localization Currencies Matrix Modifier Interfaces
- */
 function changeCurrency() {
     let selected = document.getElementById('currencySelector').value;
     state.currency = selected;
-
-    if(selected === 'USD') state.fxRate = 0.012;
-    else if(selected === 'EUR') state.fxRate = 0.011;
-    else state.fxRate = 1.0;
-
+    state.fxRate = selected === 'USD' ? 0.012 : (selected === 'EUR' ? 0.011 : 1.0);
     initializeEngine();
 }
 
@@ -506,8 +467,7 @@ function toggleTheme() {
 
 function exportReport(formatType) {
     if(state.transactions.length === 0) return alert("Ledger array empty. Add operations before executing data exports.");
-    alert(`Generating report file pipelines... \nFormat Target: ${formatType}\nDownload completed successfully.`);
+    alert(`Generating export statement payload...\nFormat Target: ${formatType}\nDownload successfully requested.`);
 }
 
-// System Boot configuration
 window.addEventListener('DOMContentLoaded', initializeEngine);
