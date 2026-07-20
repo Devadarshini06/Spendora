@@ -41,215 +41,108 @@ body {
     overflow-x: hidden;
 }
 
+/* Auth Login Screen Styles */
+.auth-wrapper {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: var(--bg-app); display: flex; align-items: center; justify-content: center; z-index: 2000;
+}
+.auth-card {
+    background: var(--bg-panel); border: 1px solid var(--border-color); padding: 2.5rem;
+    border-radius: 20px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 1.25rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center;
+}
+.auth-card h2 { font-size: 1.6rem; font-weight: 800; margin-top: 0.5rem; }
+.auth-card p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+.auth-card .spendora-logo.large { width: 48px; height: 48px; margin: 0 auto; border-radius: 12px; }
+.locked-shell { display: none !important; }
+
 /* Nav Bar Styles */
 .navbar {
-    height: 70px;
-    background-color: var(--bg-panel);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 100;
+    height: 70px; background-color: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; position: fixed; top: 0; width: 100%; z-index: 100;
 }
-
-.nav-left, .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
+.nav-left, .nav-right { display: flex; align-items: center; gap: 1.5rem; }
 .brand-name {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #fff, var(--clr-gold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff, var(--clr-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
+.logout-btn { background: rgba(239,68,68,0.1); color: var(--clr-exp); border: 1px solid rgba(239,68,68,0.3); }
 
-/* Pure Geometric Wallet CSS Logo Component */
+/* Logo Component */
 .spendora-logo {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, var(--clr-gold), var(--clr-gold-hover));
-    border-radius: 8px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 32px; height: 32px; background: linear-gradient(135deg, var(--clr-gold), var(--clr-gold-hover));
+    border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center;
 }
-.logo-inner {
-    width: 14px;
-    height: 10px;
-    border: 2px solid #000;
-    border-radius: 3px;
-    position: relative;
-}
+.logo-inner { width: 14px; height: 10px; border: 2px solid #000; border-radius: 3px; position: relative; }
 
-/* Application Interface Frame Shell */
-.app-shell {
-    display: flex;
-    margin-top: 70px;
-    min-height: calc(100vh - 70px);
-}
+/* Application Shell */
+.app-shell { display: flex; margin-top: 70px; min-height: calc(100vh - 70px); }
 
-/* Sidebar Dashboard Navigation Menu Layout */
+/* Sidebar */
 .sidebar {
-    width: 260px;
-    background-color: var(--bg-panel);
-    border-right: 1px solid var(--border-color);
-    padding: 2rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    flex-shrink: 0;
+    width: 260px; background-color: var(--bg-panel); border-right: 1px solid var(--border-color);
+    padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; flex-shrink: 0;
 }
-
-@media (max-width: 900px) {
-    .sidebar { display: none; }
-}
-
-.profile-snapshot {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
+@media (max-width: 900px) { .sidebar { display: none; } }
+.profile-snapshot { display: flex; align-items: center; gap: 0.75rem; }
 .profile-avatar {
-    width: 48px;
-    height: 48px;
-    background-color: var(--clr-gold);
-    color: #000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
+    width: 48px; height: 48px; background-color: var(--clr-gold); color: #000;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;
 }
-
 .profile-info h4 { font-size: 0.95rem; }
 .profile-info p { font-size: 0.75rem; color: var(--text-secondary); }
 .plan-tag {
-    font-size: 0.65rem;
-    background-color: rgba(255, 255, 255, 0.08);
-    color: var(--text-main);
-    padding: 0.1rem 0.3rem;
-    border-radius: 4px;
-    font-weight: 700;
+    font-size: 0.65rem; background-color: rgba(255, 255, 255, 0.08); color: var(--text-main);
+    padding: 0.1rem 0.3rem; border-radius: 4px; font-weight: 700;
 }
-
 .side-menu { list-style: none; }
 .side-menu li {
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.25rem;
+    padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 0.25rem;
 }
-.side-menu li.active, .side-menu li:hover {
-    background-color: var(--bg-element);
-    color: var(--text-main);
-}
-
+.side-menu li.active, .side-menu li:hover { background-color: var(--bg-element); color: var(--text-main); }
 .streak-card {
     background: linear-gradient(135deg, rgba(239,68,68,0.05), rgba(251,191,36,0.02));
-    border: 1px solid var(--border-color);
-    padding: 1rem;
-    border-radius: 12px;
-    margin-top: auto;
-    text-align: center;
+    border: 1px solid var(--border-color); padding: 1rem; border-radius: 12px; margin-top: auto; text-align: center;
 }
 .streak-fire { font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 0.25rem; }
 .streak-card p { font-size: 0.75rem; color: var(--text-secondary); }
 
-/* Main Dynamic Dashboard Grid Array Layout Engine */
+/* Dashboard Grid */
 .dashboard-grid {
-    flex-grow: 1;
-    padding: 2rem;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1.5rem;
-    max-width: 1400px;
-    align-content: start;
+    flex-grow: 1; padding: 2rem; display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; max-width: 1400px; align-content: start;
 }
-
 .grid-item {
-    background-color: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    grid-column: span 4;
+    background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-sm); grid-column: span 4;
 }
-
 .span-full { grid-column: span 12 !important; }
+@media (max-width: 1100px) { .grid-item { grid-column: span 6 !important; } .span-full { grid-column: span 6 !important; } }
+@media (max-width: 650px) { .grid-item { grid-column: span 12 !important; } .span-full { grid-column: span 12 !important; } }
+.grid-item h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; letter-spacing: -0.01em; }
 
-@media (max-width: 1100px) {
-    .grid-item { grid-column: span 6 !important; }
-    .span-full { grid-column: span 6 !important; }
-}
-@media (max-width: 650px) {
-    .grid-item { grid-column: span 12 !important; }
-    .span-full { grid-column: span 12 !important; }
-}
-
-.grid-item h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 1.25rem;
-    letter-spacing: -0.01em;
-}
-
-/* Financial Cards Workspace Styles */
-.summary-cards-container {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-}
-
-.sum-card {
-    flex: 1;
-    min-width: 180px;
-    background-color: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    padding: 1.25rem;
-    border-radius: 14px;
-    box-shadow: var(--shadow-sm);
-}
+/* Financial Cards */
+.summary-cards-container { display: flex; gap: 1rem; flex-wrap: wrap; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+.sum-card { flex: 1; min-width: 180px; background-color: var(--bg-panel); border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 14px; box-shadow: var(--shadow-sm); }
 .sum-card h5 { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem; }
 .sum-card h3 { font-size: 1.65rem; font-weight: 700; margin-bottom: 0; }
-
 .text-balance h3 { color: var(--text-main); }
 .text-income h3 { color: var(--clr-inc); }
 .text-expense h3 { color: var(--clr-exp); }
 .text-savings h3 { color: var(--clr-sav); }
 .text-networth h3 { color: var(--clr-gold); }
 
-/* Quick Actions and Utility Triggers styles */
+/* Quick Actions */
 .action-buttons-grid { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
-.btn-act {
-    flex: 1; border: none; padding: 0.75rem; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.85rem;
-}
+.btn-act { flex: 1; border: none; padding: 0.75rem; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.85rem; }
 .btn-act.inc { background-color: rgba(16,185,129,0.15); color: var(--clr-inc); }
 .btn-act.exp { background-color: rgba(239,68,68,0.15); color: var(--clr-exp); }
 .btn-act.goal { background-color: rgba(251,191,36,0.15); color: var(--clr-gold); }
-
 .report-export-row { display: flex; gap: 0.5rem; }
 .btn-sec {
     flex: 1; background: var(--bg-element); border: 1px solid var(--border-color); color: var(--text-main);
-    padding: 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+    padding: 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; text-align: center;
 }
 
-/* Radial Style Progress Metrics Health Indicator Circle Styles */
+/* Health Widget */
 .score-circle-container { display: flex; justify-content: center; margin-bottom: 0.75rem; }
 .score-circle {
     width: 100px; height: 100px; border-radius: 50%; border: 6px solid var(--border-color);
@@ -262,7 +155,7 @@ body {
 .stars-row.active { color: var(--clr-gold); }
 .score-desc { font-size: 0.8rem; text-align: center; color: var(--text-secondary); }
 
-/* AI insights listings */
+/* Insights */
 .insights-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
 .insights-list li {
     padding: 0.65rem 0.85rem; background-color: var(--bg-element); border-left: 3px solid var(--border-color);
@@ -270,13 +163,12 @@ body {
 }
 .insights-list li.alert-active { border-left-color: var(--clr-gold); color: var(--text-main); }
 
-/* Dynamic Pure Native Analytical Graph Output Grid Layout Panels */
+/* Charts & Inputs */
 .card-header-actions { display: flex; justify-content: space-between; align-items: center; }
-select, input[type="text"] {
+select, input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
     background: var(--bg-element); border: 1px solid var(--border-color); color: var(--text-main);
-    padding: 0.4rem 0.75rem; border-radius: 6px; outline: none; font-size: 0.85rem;
+    padding: 0.5rem 0.75rem; border-radius: 6px; outline: none; font-size: 0.85rem; width: 100%;
 }
-
 .bar-chart-viewport {
     height: 160px; display: flex; align-items: flex-end; gap: 1.5rem; padding-top: 1rem; border-bottom: 2px solid var(--border-color);
     justify-content: center; position: relative;
@@ -294,7 +186,7 @@ select, input[type="text"] {
 .chart-bar-group:hover .bar-fill::after { opacity: 1; }
 .bar-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; text-align: center; }
 
-/* Cash Flow Flowchart Visualization Panels */
+/* Cashflow */
 .flowchart { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; text-align: center; }
 .flow-node { width: 100%; padding: 0.5rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; }
 .flow-node span { display: block; font-size: 1.1rem; }
@@ -305,7 +197,7 @@ select, input[type="text"] {
 .node-net { background-color: var(--bg-element); border: 1px solid var(--border-color); }
 .flow-arrow { color: var(--text-secondary); font-weight: 900; }
 
-/* Custom Native Linear Style Layout Bar Progress Stack Track elements */
+/* Progress lists */
 .progress-list-wrapper { display: flex; flex-direction: column; gap: 1rem; }
 .prog-node-item { display: flex; flex-direction: column; gap: 0.35rem; }
 .prog-labels-row { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; }
@@ -313,7 +205,7 @@ select, input[type="text"] {
 .prog-track-base { height: 8px; background-color: var(--bg-element); border-radius: 4px; overflow: hidden; position: relative; }
 .prog-track-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
 
-/* Upcoming Invoices Stack row structures */
+/* Bills */
 .bills-stack { display: flex; flex-direction: column; gap: 0.75rem; }
 .bill-row-item {
     display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0.85rem;
@@ -324,13 +216,13 @@ select, input[type="text"] {
 .bill-left-info span.urgent { color: var(--clr-exp); }
 .bill-right-cost { font-weight: 700; color: var(--text-main); }
 
-/* Achievement Badges styles */
+/* Achievements */
 .achievements-list { display: flex; flex-direction: column; gap: 0.5rem; }
 .ach-badge { padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; display: flex; gap: 0.5rem; align-items: center; }
 .ach-badge.unlocked { background-color: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); }
 .ach-badge.locked { background-color: var(--bg-element); opacity: 0.4; border: 1px dashed var(--border-color); }
 
-/* Transaction Ledger Styling Framework */
+/* Ledger Table */
 .ledger-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }
 .ledger-controls { display: flex; gap: 0.5rem; }
 .table-scroll-container { overflow-x: auto; width: 100%; }
@@ -340,7 +232,7 @@ select, input[type="text"] {
 .btn-del-row { background: transparent; border: none; cursor: pointer; color: var(--text-secondary); }
 .btn-del-row:hover { color: var(--clr-exp); }
 
-/* Overlays and Floating Modules Layer UI */
+/* Modals */
 .modal-overlay {
     position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6);
     display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;
@@ -349,15 +241,17 @@ select, input[type="text"] {
     background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 16px;
     padding: 2rem; width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 1.25rem;
 }
+.report-modal-box { max-width: 500px; }
+.report-summary-view { background: var(--bg-element); padding: 1rem; border-radius: 10px; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
 .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
 .input-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); }
 .modal-footer-btns { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
 .btn-submit-action {
     flex: 1; background: var(--clr-gold); border: none; padding: 0.65rem; border-radius: 6px;
-    color: #000; font-weight: 700; cursor: pointer;
+    color: #000; font-weight: 700; cursor: pointer; text-align: center;
 }
 
-/* Slide Drawer elements notifications center */
+/* Drawers */
 .notif-drawer, .chatbot-drawer {
     position: fixed; top: 80px; right: -320px; width: 300px; background: var(--bg-panel);
     border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); border-radius: 12px;
@@ -368,7 +262,7 @@ select, input[type="text"] {
 .notif-items-stack { display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto; }
 .notif-node-alert { padding: 0.5rem; background: var(--bg-element); border-radius: 6px; font-size: 0.75rem; border-left: 2px solid var(--clr-gold); }
 
-/* Conversational UI chat styling framework */
+/* Chat */
 .chat-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.85rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
 .chat-header button { background: transparent; border: none; color: var(--text-main); font-size: 1.2rem; cursor: pointer; }
 .chat-messages { height: 220px; overflow-y: auto; padding: 0.5rem 0; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem; }
@@ -378,7 +272,7 @@ select, input[type="text"] {
 .chat-input-row input { flex: 1; padding: 0.4rem; font-size: 0.8rem; }
 .chat-input-row button { background: var(--clr-gold); border: none; padding: 0.4rem 0.75rem; border-radius: 6px; font-weight: 700; cursor: pointer; }
 
-/* Global helper classes elements utilities */
+/* Helpers */
 .notification-bell { cursor: pointer; position: relative; font-size: 1.25rem; }
 .notif-count {
     position: absolute; top: -5px; right: -5px; background: var(--clr-exp); color: white;
