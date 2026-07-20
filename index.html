@@ -8,30 +8,49 @@
 </head>
 <body class="dark-mode">
 
-    <!-- Top Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-left">
-            <div class="spendora-logo"><span class="logo-inner"></span></div>
-            <span class="brand-name">Spendora</span>
-        </div>
-        <div class="nav-right">
-            <div class="loc-controls">
-                <select id="currencySelector" onchange="changeCurrency()">
-                    <option value="INR">INR (₹)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                </select>
+    <!-- Authentication / Login Screen Layer -->
+    <div class="auth-wrapper" id="authScreen">
+        <div class="auth-card">
+            <div class="spendora-logo large"><span class="logo-inner"></span></div>
+            <h2>Welcome to Spendora</h2>
+            <p>Your intelligent personal finance manager</p>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" value="john.doe@spendora.ai">
             </div>
-            <button id="themeToggle" class="btn-icon" onclick="toggleTheme()">🌓</button>
-            <div class="notification-bell" onclick="toggleNotificationPanel()">
-                🔔<span class="notif-count" id="notifBadge">0</span>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" value="••••••••">
             </div>
+            <button class="btn-submit-action" onclick="handleLogin()">Sign In to Dashboard</button>
         </div>
-    </nav>
+    </div>
 
-    <!-- App Shell Layout -->
-    <div class="app-shell">
+    <!-- Main Application Shell (Hidden until login) -->
+    <div class="app-shell locked-shell" id="appShell">
         
+        <!-- Top Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="spendora-logo"><span class="logo-inner"></span></div>
+                <span class="brand-name">Spendora</span>
+            </div>
+            <div class="nav-right">
+                <div class="loc-controls">
+                    <select id="currencySelector" onchange="changeCurrency()">
+                        <option value="INR">INR (₹)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                    </select>
+                </div>
+                <button id="themeToggle" class="btn-icon" onclick="toggleTheme()">🌓</button>
+                <div class="notification-bell" onclick="toggleNotificationPanel()">
+                    🔔<span class="notif-count" id="notifBadge">0</span>
+                </div>
+                <button class="btn-sec logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+
         <!-- Sidebar Interface -->
         <aside class="sidebar">
             <div class="profile-snapshot">
@@ -39,19 +58,19 @@
                 <div class="profile-info">
                     <h4 id="profName">John Doe</h4>
                     <p id="profEmail">john.doe@spendora.ai</p>
-                    <span class="plan-tag">Standard Account</span>
+                    <span class="plan-tag">Active Profile</span>
                 </div>
             </div>
             <hr class="divider">
             <ul class="side-menu">
                 <li class="active">📊 Overview</li>
-                <li onclick="alert('OCR Receipt Scanner running simulation... Please add data first!')">📷 Receipt OCR</li>
+                <li onclick="alert('Receipt OCR Scanner: Upload an image file to extract items automatically.')">📷 Receipt OCR</li>
                 <li onclick="openChatbot()">🤖 AI Advisor</li>
-                <li onclick="alert('Recurring System Active: Ready for automated pipelines.')">🔁 Recurring Rules</li>
+                <li onclick="alert('Recurring Rules active: Managing automated rent & salary rows.')">🔁 Recurring Rules</li>
             </ul>
             <div class="streak-card">
                 <span class="streak-fire">🔥 0 Day Streak</span>
-                <p>Log your first transaction to start a streak!</p>
+                <p>Log a transaction to build your streak!</p>
             </div>
         </aside>
 
@@ -61,7 +80,7 @@
             <!-- Welcome Header Module -->
             <div class="grid-item welcome-header span-full">
                 <h2>Welcome Back, John 👋</h2>
-                <p class="tagline">Here's your comprehensive real-time financial health overview.</p>
+                <p class="tagline">Here is your comprehensive real-time financial health overview.</p>
             </div>
 
             <!-- Financial Summary Cards Panel -->
@@ -97,8 +116,8 @@
                     <button class="btn-act goal" onclick="triggerAction('goal')">🎯 Create Goal</button>
                 </div>
                 <div class="report-export-row">
+                    <button class="btn-sec" onclick="openMonthlyReportModal()">📑 Monthly Report</button>
                     <button class="btn-sec" onclick="exportReport('PDF')">📄 Export PDF</button>
-                    <button class="btn-sec" onclick="exportReport('Excel')">📊 Export Excel</button>
                 </div>
             </div>
 
@@ -118,29 +137,23 @@
             <!-- AI Engine Insights Engine Box -->
             <div class="grid-item ai-insights-panel">
                 <h3>🤖 Spendora AI Insights</h3>
-                <ul class="insights-list" id="aiInsightsContainer">
-                    <!-- Loaded dynamically via script engine -->
-                </ul>
+                <ul class="insights-list" id="aiInsightsContainer"></ul>
             </div>
 
             <!-- Income vs Expense Bar Chart -->
             <div class="grid-item chart-card">
                 <div class="card-header-actions">
                     <h3>Income vs Expense</h3>
-                    <select id="chartFilter" onchange="refreshVisualAnalytics()">
+                    <select id="chartFilter">
                         <option value="thisMonth">This Month</option>
-                        <option value="last6Months">Last 6 Months</option>
-                        <option value="thisYear">This Year</option>
                     </select>
                 </div>
-                <div class="bar-chart-viewport" id="incomeExpenseChart">
-                    <!-- Rendered custom columns by JS mapping -->
-                </div>
+                <div class="bar-chart-viewport" id="incomeExpenseChart"></div>
             </div>
 
             <!-- Cash Flow Analysis Module -->
             <div class="grid-item cashflow-card">
-                <h3>Cash Flow Flowchart</h3>
+                <h3>Cash Flow Analysis</h3>
                 <div class="flowchart">
                     <div class="flow-node node-in">Money Coming In <span id="flowIn">₹0.00</span></div>
                     <div class="flow-arrow">↓</div>
@@ -153,33 +166,25 @@
             <!-- Expense Breakdown & Budget Target Panel -->
             <div class="grid-item category-budgets-card">
                 <h3>Category Limits & Budgets</h3>
-                <div id="categoryBudgetsContainer" class="progress-list-wrapper">
-                    <!-- Progress tracks inject dynamic loops -->
-                </div>
+                <div id="categoryBudgetsContainer" class="progress-list-wrapper"></div>
             </div>
 
             <!-- Savings Target Goals Widget -->
             <div class="grid-item savings-goals-card">
                 <h3>Active Savings Goals</h3>
-                <div id="savingsGoalsContainer" class="progress-list-wrapper">
-                    <!-- Active saving targets rendering space -->
-                </div>
+                <div id="savingsGoalsContainer" class="progress-list-wrapper"></div>
             </div>
 
             <!-- Upcoming Invoices & Billing Deadlines -->
             <div class="grid-item upcoming-bills-card">
                 <h3>Upcoming Bills</h3>
-                <div class="bills-stack" id="billsContainer">
-                    <!-- Bills iteration nodes -->
-                </div>
+                <div class="bills-stack" id="billsContainer"></div>
             </div>
 
             <!-- Gamification Milestones Achievements -->
             <div class="grid-item achievements-card">
                 <h3>System Achievements</h3>
-                <div class="achievements-list" id="achievementsContainer">
-                    <!-- Dynamic validation states populated by js -->
-                </div>
+                <div class="achievements-list" id="achievementsContainer"></div>
             </div>
 
             <!-- Dynamic Master Transaction Table Ledger Component -->
@@ -206,9 +211,7 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="masterTransactionBody">
-                            <!-- Dynamic transactional components injection inside row lines -->
-                        </tbody>
+                        <tbody id="masterTransactionBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -222,7 +225,7 @@
             <h4 id="modalTitle">Log Entry</h4>
             <div class="input-group">
                 <label>Description</label>
-                <input type="text" id="txtDesc" placeholder="e.g. Grocery Shop, Freelance Pay">
+                <input type="text" id="txtDesc" placeholder="e.g. Grocery Store, Salary">
             </div>
             <div class="input-group">
                 <label>Amount</label>
@@ -246,12 +249,25 @@
         </div>
     </div>
 
+    <!-- Monthly Report Preview Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-body report-modal-box">
+            <h4>📊 Monthly Financial Statement</h4>
+            <div class="report-summary-view" id="reportSummaryView">
+                <!-- Injected report summary -->
+            </div>
+            <div class="modal-footer-btns">
+                <button class="btn-sec" onclick="closeMonthlyReportModal()">Close</button>
+                <button class="btn-submit-action" onclick="downloadReportFile('PDF')">Download PDF</button>
+                <button class="btn-submit-action" onclick="downloadReportFile('Excel')" style="background:var(--clr-inc); color:#fff;">Download Excel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification Side Stack Dropdowns drawer -->
     <div class="notif-drawer" id="notificationDrawer">
         <h4>Notifications Center</h4>
-        <div class="notif-items-stack" id="notifStack">
-            <!-- Alert items stream -->
-        </div>
+        <div class="notif-items-stack" id="notifStack"></div>
     </div>
 
     <!-- AI Chatbot interface Panel -->
