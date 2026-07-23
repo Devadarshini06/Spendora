@@ -1,16 +1,13 @@
 /**
- * Spendora Core State Architecture with Dynamic User Profile Syncing
+ * Spendora Core State Architecture
  */
 let state = {
     isAuthenticated: localStorage.getItem('spendora_auth') === 'true',
-    user: JSON.parse(localStorage.getItem('spendora_user')) || {
-        name: "Alex Morgan",
-        email: "alex.morgan@spendora.ai"
-    },
+    user: safeJSONParse(localStorage.getItem('spendora_user'), null),
     currency: "INR",
     fxRate: 1.0, 
     activeModalType: null,
-    transactions: JSON.parse(localStorage.getItem('spendora_transactions')) || [],
+    transactions: safeJSONParse(localStorage.getItem('spendora_transactions'), []),
     categoryBudgets: {
         Food: { limit: 8000 },
         Shopping: { limit: 5000 },
@@ -19,10 +16,10 @@ let state = {
         Rent: { limit: 15000 },
         Others: { limit: 5000 }
     },
-    savingsGoals: JSON.parse(localStorage.getItem('spendora_goals')) || [
+    savingsGoals: safeJSONParse(localStorage.getItem('spendora_goals'), [
         { name: "Buy Laptop Workstation", target: 80000, saved: 0, color: "var(--clr-gold)" },
         { name: "Emergency Contingency Fund", target: 150000, saved: 0, color: "var(--clr-inc)" }
-    ],
+    ]),
     upcomingBills: [
         { title: "Electricity Grid Bill", daysLeft: "Due Tomorrow", amount: 2300 },
         { title: "Premium Fiber Internet Bill", daysLeft: "Due in 5 Days", amount: 999 }
@@ -32,6 +29,15 @@ let state = {
 
 const currencySymbols = { INR: "₹", USD: "$", EUR: "€" };
 
+// JSON Safe Parse Helper
+function safeJSONParse(data, fallback) {
+    try {
+        return data ? JSON.parse(data) : fallback;
+    } catch (e) {
+        return fallback;
+    }
+}
+
 /**
  * System Bootstrapper & Auth Check
  */
@@ -39,7 +45,7 @@ function initializeEngine() {
     const authScreen = document.getElementById('authScreen');
     const appShell = document.getElementById('appShell');
 
-    if (!state.isAuthenticated) {
+    if (!state.isAuthenticated || !state.user) {
         authScreen.style.display = 'flex';
         appShell.classList.add('locked-shell');
         return;
@@ -48,7 +54,7 @@ function initializeEngine() {
     authScreen.style.display = 'none';
     appShell.classList.remove('locked-shell');
 
-    // Update dynamic profile UI elements
+    // Sync profile display across the dashboard
     updateUserProfileDisplay();
 
     renderDashboardMetrics();
@@ -62,14 +68,27 @@ function initializeEngine() {
     renderAchievements();
 }
 
-function handleLogin() {
-    let name = document.getElementById('loginName').value.trim();
-    let email = document.getElementById('loginEmail').value.trim();
+/**
+ * Enhanced Login Handler with Form Validation
+ */
+function handleLogin(event) {
+    if (event) event.preventDefault();
 
-    if(!name || !email) return alert("Please supply complete login credentials.");
+    const nameInput = document.getElementById('loginName').value.trim();
+    const emailInput = document.getElementById('loginEmail').value.trim();
+
+    if (!nameInput || !emailInput) {
+        return alert("Please provide both your full name and email address.");
+    }
+
+    // Basic Email Pattern Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailInput)) {
+        return alert("Please enter a valid email address.");
+    }
 
     state.isAuthenticated = true;
-    state.user = { name: name, email: email };
+    state.user = { name: nameInput, email: emailInput };
 
     localStorage.setItem('spendora_auth', 'true');
     localStorage.setItem('spendora_user', JSON.stringify(state.user));
@@ -77,37 +96,57 @@ function handleLogin() {
     initializeEngine();
 }
 
+/**
+ * Logout Handler
+ */
 function handleLogout() {
     state.isAuthenticated = false;
+    state.user = null;
+    state.notifications = [];
+
     localStorage.removeItem('spendora_auth');
     localStorage.removeItem('spendora_user');
+
+    // Reset login inputs
+    const form = document.getElementById('loginForm');
+    if (form) form.reset();
+
     initializeEngine();
 }
 
 /**
- * Dynamic User Profile Renderer
+ * Robust Profile Details & Initials Generator
  */
 function updateUserProfileDisplay() {
-    const name = state.user.name || "User";
-    const email = state.user.email || "user@spendora.ai";
+    if (!state.user || !state.user.name) return;
 
-    // Compute initials dynamically (e.g. "Alex Morgan" -> "AM")
-    const nameParts = name.trim().split(' ');
+    const name = state.user.name.trim();
+    const email = state.user.email.trim();
+
+    // Initials Extractor Matrix
+    const parts = name.split(/\s+/).filter(Boolean);
     let initials = "";
-    if (nameParts.length > 1) {
-        initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
-    } else if (nameParts.length === 1 && nameParts[0].length > 0) {
-        initials = nameParts[0].substring(0, 2).toUpperCase();
+
+    if (parts.length >= 2) {
+        initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    } else if (parts.length === 1) {
+        initials = parts[0].substring(0, Math.min(2, parts[0].length)).toUpperCase();
     } else {
         initials = "US";
     }
 
-    // Update Sidebar & Dashboard Header
+    const firstName = parts[0] || "User";
+
+    // Update DOM Display Elements
     document.getElementById('profName').innerText = name;
     document.getElementById('profEmail').innerText = email;
     document.getElementById('profAvatar').innerText = initials;
-    document.getElementById('welcomeHeading').innerText = `Welcome Back, ${nameParts[0]} 👋`;
-    document.getElementById('chatAiWelcome').innerText = `Hello ${nameParts[0]}! Add your records to query balance summaries or expense forecasts.`;
+    document.getElementById('welcomeHeading').innerText = `Welcome Back, ${firstName} 👋`;
+    
+    const chatWelcome = document.getElementById('chatAiWelcome');
+    if (chatWelcome) {
+        chatWelcome.innerText = `Hello ${firstName}! Add your records to query balance summaries or expense forecasts.`;
+    }
 }
 
 /**
@@ -138,26 +177,29 @@ function renderDashboardMetrics() {
     let nodeIn = document.querySelector('.node-in');
     let nodeOut = document.querySelector('.node-out');
     
-    if(incomeTotal > 0) nodeIn.classList.add('active'); else nodeIn.classList.remove('active');
-    if(expenseTotal > 0) nodeOut.classList.add('active'); else nodeOut.classList.remove('active');
+    if(nodeIn) nodeIn.classList.toggle('active', incomeTotal > 0);
+    if(nodeOut) nodeOut.classList.toggle('active', expenseTotal > 0);
 
     let netFlowContainer = document.getElementById('flowNet');
     let netFlowValueEl = document.getElementById('flowNetVal');
     
-    netFlowValueEl.innerText = `${netCalculatedBalance >= 0 ? '+' : ''}${formatCurrencyVal(netCalculatedBalance)}`;
-    netFlowContainer.style.color = netCalculatedBalance > 0 ? "var(--clr-inc)" : (netCalculatedBalance < 0 ? "var(--clr-exp)" : "var(--text-main)");
+    if (netFlowValueEl && netFlowContainer) {
+        netFlowValueEl.innerText = `${netCalculatedBalance >= 0 ? '+' : ''}${formatCurrencyVal(netCalculatedBalance)}`;
+        netFlowContainer.style.color = netCalculatedBalance > 0 ? "var(--clr-inc)" : (netCalculatedBalance < 0 ? "var(--clr-exp)" : "var(--text-main)");
+    }
 
     calculateFinancialHealthScore(incomeTotal, expenseTotal);
 }
 
 function formatCurrencyVal(val) {
     let converted = val * state.fxRate;
-    let symbol = currencySymbols[state.currency];
+    let symbol = currencySymbols[state.currency] || "₹";
     return symbol + converted.toLocaleString(state.currency === 'INR' ? 'en-IN' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function refreshVisualAnalytics() {
     const viewport = document.getElementById('incomeExpenseChart');
+    if(!viewport) return;
     viewport.innerHTML = ''; 
 
     let incomeTotal = 0;
@@ -193,9 +235,12 @@ function calculateFinancialHealthScore(inc, exp) {
     const scoreCircle = document.querySelector('.score-circle');
     const starsRow = document.getElementById('healthStars');
     const desc = document.getElementById('healthDesc');
+    const scoreVal = document.getElementById('healthScoreValue');
     
+    if (!scoreCircle || !starsRow || !desc || !scoreVal) return;
+
     if (inc === 0 && exp === 0) {
-        document.getElementById('healthScoreValue').innerText = "0";
+        scoreVal.innerText = "0";
         scoreCircle.classList.remove('active');
         starsRow.classList.remove('active');
         starsRow.innerText = "☆☆☆☆☆";
@@ -207,7 +252,7 @@ function calculateFinancialHealthScore(inc, exp) {
     starsRow.classList.add('active');
 
     let score = exp === 0 ? 100 : Math.max(10, Math.min(100, 100 - Math.round((exp / inc) * 50)));
-    document.getElementById('healthScoreValue').innerText = score;
+    scoreVal.innerText = score;
     
     if (score >= 85) {
         starsRow.innerText = "★★★★★";
@@ -223,6 +268,7 @@ function calculateFinancialHealthScore(inc, exp) {
 
 function renderBudgetProgressBars() {
     const container = document.getElementById('categoryBudgetsContainer');
+    if(!container) return;
     container.innerHTML = '';
 
     let spentMap = { Food: 0, Shopping: 0, Travel: 0, Utilities: 0, Rent: 0, Others: 0 };
@@ -259,6 +305,7 @@ function renderBudgetProgressBars() {
 
 function renderSavingsGoals() {
     const container = document.getElementById('savingsGoalsContainer');
+    if(!container) return;
     container.innerHTML = '';
 
     state.savingsGoals.forEach((g, index) => {
@@ -295,7 +342,9 @@ function allocateFundsToGoal(index) {
 
 function renderUpcomingBills() {
     const container = document.getElementById('billsContainer');
+    if(!container) return;
     container.innerHTML = '';
+    
     state.upcomingBills.forEach(b => {
         let el = document.createElement('div');
         el.className = 'bill-row-item';
@@ -311,9 +360,16 @@ function renderUpcomingBills() {
 }
 
 function renderNotificationsList() {
-    document.getElementById('notifBadge').innerText = state.notifications.length;
+    const badge = document.getElementById('notifBadge');
+    if(badge) badge.innerText = state.notifications.length;
+
     const container = document.getElementById('notifStack');
-    container.innerHTML = state.notifications.length === 0 ? '<p style="font-size:0.8rem; color:var(--text-secondary); padding:1rem 0;">No new alerts.</p>' : '';
+    if(!container) return;
+    
+    container.innerHTML = state.notifications.length === 0 
+        ? '<p style="font-size:0.8rem; color:var(--text-secondary); padding:1rem 0;">No new alerts.</p>' 
+        : '';
+        
     state.notifications.forEach(msg => {
         let el = document.createElement('div');
         el.className = 'notif-node-alert';
@@ -324,6 +380,7 @@ function renderNotificationsList() {
 
 function renderAchievements() {
     const container = document.getElementById('achievementsContainer');
+    if(!container) return;
     let hasTransactions = state.transactions.length > 0;
     container.innerHTML = `
         <div class="ach-badge ${hasTransactions ? 'unlocked' : 'locked'}">
@@ -334,10 +391,14 @@ function renderAchievements() {
 
 function renderTransactionsTable() {
     const tbody = document.getElementById('masterTransactionBody');
+    if(!tbody) return;
     tbody.innerHTML = '';
 
-    const searchTerm = document.getElementById('ledgerSearch').value.toLowerCase();
-    const typeFilter = document.getElementById('ledgerFilter').value;
+    const searchEl = document.getElementById('ledgerSearch');
+    const filterEl = document.getElementById('ledgerFilter');
+    
+    const searchTerm = searchEl ? searchEl.value.toLowerCase() : '';
+    const typeFilter = filterEl ? filterEl.value : 'all';
 
     let filtered = state.transactions.filter(t => {
         return (t.description.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm)) &&
@@ -372,13 +433,14 @@ function removeTransactionRow(id) {
 
 function executeAIInsightsEngine() {
     const container = document.getElementById('aiInsightsContainer');
+    if(!container) return;
     container.innerHTML = state.transactions.length === 0 ? 
         '<li>Ecosystem monitoring online. Add transactional vectors to stream automated AI insights.</li>' : 
         '<li class="alert-active">Operational parameters indicate normal configuration matrix metrics limits.</li>';
 }
 
 /**
- * Monthly Report Modal Controllers & Downloads
+ * Monthly Report Modal Controllers
  */
 function openMonthlyReportModal() {
     let incomeTotal = 0, expenseTotal = 0;
@@ -388,14 +450,16 @@ function openMonthlyReportModal() {
     });
 
     const summaryView = document.getElementById('reportSummaryView');
-    summaryView.innerHTML = `
-        <p><strong>Account Holder:</strong> ${state.user.name}</p>
-        <p><strong>Period:</strong> Current Active Month Ledger</p>
-        <p><strong>Total Transactions Count:</strong> ${state.transactions.length}</p>
-        <p><strong>Gross Income:</strong> ${formatCurrencyVal(incomeTotal)}</p>
-        <p><strong>Gross Expenses:</strong> ${formatCurrencyVal(expenseTotal)}</p>
-        <p><strong>Net Cash Flow:</strong> ${formatCurrencyVal(incomeTotal - expenseTotal)}</p>
-    `;
+    if(summaryView) {
+        summaryView.innerHTML = `
+            <p><strong>Account Holder:</strong> ${state.user ? state.user.name : 'User'}</p>
+            <p><strong>Period:</strong> Current Active Month Ledger</p>
+            <p><strong>Total Transactions Count:</strong> ${state.transactions.length}</p>
+            <p><strong>Gross Income:</strong> ${formatCurrencyVal(incomeTotal)}</p>
+            <p><strong>Gross Expenses:</strong> ${formatCurrencyVal(expenseTotal)}</p>
+            <p><strong>Net Cash Flow:</strong> ${formatCurrencyVal(incomeTotal - expenseTotal)}</p>
+        `;
+    }
 
     document.getElementById('reportModal').style.display = 'flex';
 }
@@ -405,7 +469,8 @@ function closeMonthlyReportModal() {
 }
 
 function downloadReportFile(formatType) {
-    alert(`Successfully generated statement payload for ${state.user.name}!\nFormat: ${formatType}\nCheck your device downloads folder.`);
+    const userName = state.user ? state.user.name : "User";
+    alert(`Successfully generated statement payload for ${userName}!\nFormat: ${formatType}\nCheck your device downloads folder.`);
     closeMonthlyReportModal();
 }
 
@@ -440,7 +505,7 @@ function saveModalEntry() {
     let val = parseFloat(document.getElementById('numAmount').value);
     let cat = document.getElementById('selCategory').value;
 
-    if(!desc || isNaN(val) || val <= 0) return alert("Please supply complete structural field values!");
+    if(!desc || isNaN(val) || val <= 0) return alert("Please supply valid field values!");
 
     if(state.activeModalType === 'income' || state.activeModalType === 'expense') {
         state.transactions.push({
@@ -475,18 +540,20 @@ function closeChatbot() {
 function sendChatMessage() {
     const inp = document.getElementById('chatInput');
     const box = document.getElementById('chatBox');
-    if(!inp.value.trim()) return;
+    if(!inp || !box || !inp.value.trim()) return;
 
     let userMsg = document.createElement('p');
     userMsg.className = 'msg-user';
     userMsg.innerText = inp.value;
     box.appendChild(userMsg);
 
+    const firstName = state.user ? state.user.name.split(' ')[0] : 'User';
+
     setTimeout(() => {
         let aiMsg = document.createElement('p');
         aiMsg.className = 'msg-ai';
         aiMsg.innerText = state.transactions.length === 0 ? 
-            `No transaction records found to query, ${state.user.name.split(' ')[0]}. Use Quick Actions to log data.` : 
+            `No transaction records found to query, ${firstName}. Use Quick Actions to log data.` : 
             `Active budget matrices and ledger arrays are tracking successfully within target limits.`;
         box.appendChild(aiMsg);
         box.scrollTop = box.scrollHeight;
