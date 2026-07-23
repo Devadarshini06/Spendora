@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spendora - Premium Expense Tracker</title>
+    <title>Spendora - Premium Enterprise Finance Manager</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="dark-mode">
 
@@ -16,7 +18,6 @@
             <h2>Welcome to Spendora</h2>
             <p>Your intelligent personal finance manager</p>
             
-            <!-- Wrapped in a form to support Enter Key submission -->
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <label for="loginName">Full Name</label>
@@ -35,7 +36,7 @@
         </div>
     </div>
 
-    <!-- Main Application Shell (Hidden until login) -->
+    <!-- Main Application Shell -->
     <div class="app-shell locked-shell" id="appShell">
         
         <!-- Top Navigation Bar -->
@@ -52,7 +53,7 @@
                         <option value="EUR">EUR (€)</option>
                     </select>
                 </div>
-                <button id="themeToggle" class="btn-icon" onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
+                <button id="themeToggle" class="btn-icon" onclick="toggleTheme()" aria-label="Toggle Theme">🌓</button>
                 <div class="notification-bell" onclick="toggleNotificationPanel()">
                     🔔<span class="notif-count" id="notifBadge">0</span>
                 </div>
@@ -67,7 +68,7 @@
                 <div class="profile-info">
                     <h4 id="profName">--</h4>
                     <p id="profEmail">--</p>
-                    <span class="plan-tag">Active Profile</span>
+                    <span class="plan-tag">Pro Account</span>
                 </div>
             </div>
             <hr class="divider">
@@ -75,21 +76,21 @@
                 <li class="active">📊 Overview</li>
                 <li onclick="alert('Receipt OCR Scanner: Upload an image file to extract items automatically.')">📷 Receipt OCR</li>
                 <li onclick="openChatbot()">🤖 AI Advisor</li>
-                <li onclick="alert('Recurring Rules active: Managing automated rent & salary rows.')">🔁 Recurring Rules</li>
+                <li onclick="alert('Recurring Rules Active: Managing automated rent & salary entries.')">🔁 Recurring Rules</li>
             </ul>
             <div class="streak-card">
-                <span class="streak-fire">🔥 0 Day Streak</span>
-                <p>Log a transaction to build your streak!</p>
+                <span class="streak-fire" id="streakCounter">🔥 0 Day Streak</span>
+                <p>Log a transaction to build your financial streak!</p>
             </div>
         </aside>
 
-        <!-- Main Workspace Dashboard Grid Area -->
+        <!-- Main Workspace Dashboard Grid -->
         <main class="dashboard-grid">
             
             <!-- Welcome Header Module -->
             <div class="grid-item welcome-header span-full">
                 <h2 id="welcomeHeading">Welcome 👋</h2>
-                <p class="tagline">Here is your comprehensive real-time financial health overview.</p>
+                <p class="tagline">Here is your real-time financial overview and ledger metrics.</p>
             </div>
 
             <!-- Financial Summary Cards Panel -->
@@ -126,7 +127,7 @@
                 </div>
                 <div class="report-export-row">
                     <button class="btn-sec" onclick="openMonthlyReportModal()">📑 Monthly Report</button>
-                    <button class="btn-sec" onclick="exportReport('PDF')">📄 Export PDF</button>
+                    <button class="btn-sec" onclick="exportReport('CSV')">📄 Export CSV Data</button>
                 </div>
             </div>
 
@@ -140,7 +141,7 @@
                     </div>
                 </div>
                 <div class="stars-row" id="healthStars">☆☆☆☆☆</div>
-                <p class="score-desc" id="healthDesc">No data recorded yet. Add transactions to compute your health index.</p>
+                <p class="score-desc" id="healthDesc">No data recorded yet. Add transactions to compute your score.</p>
             </div>
 
             <!-- AI Engine Insights Box -->
@@ -164,9 +165,9 @@
             <div class="grid-item cashflow-card">
                 <h3>Cash Flow Analysis</h3>
                 <div class="flowchart">
-                    <div class="flow-node node-in">Money Coming In <span id="flowIn">₹0.00</span></div>
+                    <div class="flow-node node-in">Money In <span id="flowIn">₹0.00</span></div>
                     <div class="flow-arrow">↓</div>
-                    <div class="flow-node node-out">Money Going Out <span id="flowOut">₹0.00</span></div>
+                    <div class="flow-node node-out">Money Out <span id="flowOut">₹0.00</span></div>
                     <div class="flow-arrow">↓</div>
                     <div class="flow-node node-net" id="flowNet">Net Cash Flow <span id="flowNetVal">₹0.00</span></div>
                 </div>
@@ -196,12 +197,12 @@
                 <div class="achievements-list" id="achievementsContainer"></div>
             </div>
 
-            <!-- Dynamic Master Transaction Table Ledger Component -->
+            <!-- Dynamic Master Transaction Table Ledger -->
             <div class="grid-item ledger-card span-full">
                 <div class="ledger-header-row">
                     <h3>Recent Transactions</h3>
                     <div class="ledger-controls">
-                        <input type="text" id="ledgerSearch" placeholder="Search by name..." oninput="renderTransactionsTable()">
+                        <input type="text" id="ledgerSearch" placeholder="Search by description..." oninput="renderTransactionsTable()">
                         <select id="ledgerFilter" onchange="renderTransactionsTable()">
                             <option value="all">All Items</option>
                             <option value="income">Income</option>
@@ -253,7 +254,7 @@
             </div>
             <div class="modal-footer-btns">
                 <button class="btn-sec" onclick="closeModal()">Cancel</button>
-                <button class="btn-submit-action" onclick="saveModalEntry()">Save Data</button>
+                <button class="btn-submit-action" onclick="saveModalEntry()">Save Record</button>
             </div>
         </div>
     </div>
@@ -265,13 +266,12 @@
             <div class="report-summary-view" id="reportSummaryView"></div>
             <div class="modal-footer-btns">
                 <button class="btn-sec" onclick="closeMonthlyReportModal()">Close</button>
-                <button class="btn-submit-action" onclick="downloadReportFile('PDF')">Download PDF</button>
-                <button class="btn-submit-action" onclick="downloadReportFile('Excel')" style="background:var(--clr-inc); color:#fff;">Download Excel</button>
+                <button class="btn-submit-action" onclick="exportReport('CSV')">Download CSV Statement</button>
             </div>
         </div>
     </div>
 
-    <!-- Notification Side Stack Drawer -->
+    <!-- Notification Side Drawer -->
     <div class="notif-drawer" id="notificationDrawer">
         <h4>Notifications Center</h4>
         <div class="notif-items-stack" id="notifStack"></div>
@@ -280,14 +280,14 @@
     <!-- AI Chatbot Interface Panel -->
     <div class="chatbot-drawer" id="chatbotDrawer">
         <div class="chat-header">
-            <span>🤖 Spendora Financial Advisor</span>
+            <span>🤖 Spendora AI Advisor</span>
             <button onclick="closeChatbot()">×</button>
         </div>
         <div class="chat-messages" id="chatBox">
             <p class="msg-ai" id="chatAiWelcome">Hello! Add your records to query balance summaries or expense forecasts.</p>
         </div>
         <div class="chat-input-row">
-            <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+            <input type="text" id="chatInput" placeholder="Type a message (e.g., 'What is my balance?')..." onkeydown="if(event.key==='Enter') sendChatMessage()">
             <button onclick="sendChatMessage()">Send</button>
         </div>
     </div>
