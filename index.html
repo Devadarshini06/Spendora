@@ -14,19 +14,23 @@
             <div class="spendora-logo large"><span class="logo-inner"></span></div>
             <h2>Welcome to Spendora</h2>
             <p>Your intelligent personal finance manager</p>
-            <div class="input-group">
-                <label>Full Name</label>
-                <input type="text" id="loginName" placeholder="Enter your full name">
-            </div>
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="loginEmail" placeholder="Enter your email address">
-            </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="loginPass" placeholder="Enter password">
-            </div>
-            <button class="btn-submit-action" onclick="handleLogin()">Sign In to Dashboard</button>
+            
+            <!-- Wrapped in a form to support Enter Key submission -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="loginName">Full Name</label>
+                    <input type="text" id="loginName" placeholder="e.g. Alex Morgan" autocomplete="name" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="e.g. alex@spendora.ai" autocomplete="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPass">Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-submit-action">Sign In to Dashboard</button>
+            </form>
         </div>
     </div>
 
@@ -47,7 +51,7 @@
                         <option value="EUR">EUR (€)</option>
                     </select>
                 </div>
-                <button id="themeToggle" class="btn-icon" onclick="toggleTheme()">🌓</button>
+                <button id="themeToggle" class="btn-icon" onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
                 <div class="notification-bell" onclick="toggleNotificationPanel()">
                     🔔<span class="notif-count" id="notifBadge">0</span>
                 </div>
@@ -138,7 +142,7 @@
                 <p class="score-desc" id="healthDesc">No data recorded yet. Add transactions to compute your health index.</p>
             </div>
 
-            <!-- AI Engine Insights Engine Box -->
+            <!-- AI Engine Insights Box -->
             <div class="grid-item ai-insights-panel">
                 <h3>🤖 Spendora AI Insights</h3>
                 <ul class="insights-list" id="aiInsightsContainer"></ul>
@@ -228,15 +232,15 @@
         <div class="modal-body">
             <h4 id="modalTitle">Log Entry</h4>
             <div class="input-group">
-                <label>Description</label>
+                <label for="txtDesc">Description</label>
                 <input type="text" id="txtDesc" placeholder="e.g. Grocery Store, Salary">
             </div>
             <div class="input-group">
-                <label>Amount</label>
-                <input type="number" id="numAmount" placeholder="0.00">
+                <label for="numAmount">Amount</label>
+                <input type="number" id="numAmount" placeholder="0.00" min="0" step="any">
             </div>
             <div class="input-group" id="categoryGroup">
-                <label>Category</label>
+                <label for="selCategory">Category</label>
                 <select id="selCategory">
                     <option value="Food">Food</option>
                     <option value="Shopping">Shopping</option>
@@ -257,9 +261,7 @@
     <div class="modal-overlay" id="reportModal">
         <div class="modal-body report-modal-box">
             <h4>📊 Monthly Financial Statement</h4>
-            <div class="report-summary-view" id="reportSummaryView">
-                <!-- Injected report summary -->
-            </div>
+            <div class="report-summary-view" id="reportSummaryView"></div>
             <div class="modal-footer-btns">
                 <button class="btn-sec" onclick="closeMonthlyReportModal()">Close</button>
                 <button class="btn-submit-action" onclick="downloadReportFile('PDF')">Download PDF</button>
@@ -268,20 +270,23 @@
         </div>
     </div>
 
-    <!-- Notification Side Stack Dropdowns drawer -->
+    <!-- Notification Side Stack Drawer -->
     <div class="notif-drawer" id="notificationDrawer">
         <h4>Notifications Center</h4>
         <div class="notif-items-stack" id="notifStack"></div>
     </div>
 
-    <!-- AI Chatbot interface Panel -->
+    <!-- AI Chatbot Interface Panel -->
     <div class="chatbot-drawer" id="chatbotDrawer">
-        <div class="chat-header"><span>🤖 Spendora Financial Advisor</span><button onclick="closeChatbot()">×</button></div>
+        <div class="chat-header">
+            <span>🤖 Spendora Financial Advisor</span>
+            <button onclick="closeChatbot()">×</button>
+        </div>
         <div class="chat-messages" id="chatBox">
             <p class="msg-ai" id="chatAiWelcome">Hello! Add your records to query balance summaries or expense forecasts.</p>
         </div>
         <div class="chat-input-row">
-            <input type="text" id="chatInput" placeholder="Type a message...">
+            <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
             <button onclick="sendChatMessage()">Send</button>
         </div>
     </div>
