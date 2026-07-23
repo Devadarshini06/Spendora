@@ -218,6 +218,7 @@ body {
     pointer-events: none;
 }
 
+
 /* Top Navbar */
 .navbar {
     grid-area: nav;
