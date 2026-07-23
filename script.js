@@ -440,6 +440,7 @@ function executeAIInsightsEngine() {
 }
 
 /**
+ * 
  * Monthly Report Modal Controllers
  */
 function openMonthlyReportModal() {
